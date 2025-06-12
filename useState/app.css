@@ -1,0 +1,20 @@
+.wrap {
+  margin: 100px auto;
+  width: 400px;
+  text-align: center;
+}
+
+.text {
+  display: block;
+  font-size: 40px;
+  padding: 10px 0;
+}
+
+.button {
+  margin-top: 20px;
+  padding: 0 10px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  font-size: 30px;
+  line-height: 40px;
+}

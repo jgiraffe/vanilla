@@ -1,0 +1,99 @@
+<html lang="ko">
+  <head>
+    <meta charset="ut`-8" />
+    <title>vanilla useState</title>
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"
+    />
+    <link href="./reset.css" rel="stylesheet" />
+    <link href="./app.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      const root = document.getElementById("root");
+
+      // react의 useState를 흉내낸 함수, 클로저를 사용하기 위해 즉시실행 함수로 작성
+      const hooks = (() => {
+        const state = [];
+        let index = 0;
+
+        const useState = (initialValue) => {
+          const currentIndex = index;
+          state[currentIndex] = state[currentIndex] ?? initialValue;
+
+          const setState = (newValue) => {
+            state[currentIndex] = newValue;
+            rerender();
+          };
+
+          index++;
+          return [state[currentIndex], setState];
+        };
+
+        const resetIndex = () => {
+          index = 0;
+        };
+
+        return { useState, resetIndex };
+      })();
+
+      // 컴포넌트에서 사용하는 dom을 그리기 위한 함수
+      const h = (tag, props, ...children) => {
+        const e = document.createElement(tag);
+
+        Object.entries(props).forEach(([key, value]) => {
+          key.startsWith("on")
+            ? e.addEventListener(key.slice(2).toLowerCase(), value)
+            : e.setAttribute(key, value);
+        });
+
+        children.forEach((child) => {
+          typeof child === "string"
+            ? e.appendChild(document.createTextNode(child))
+            : e.appendChild(child);
+        });
+
+        return e;
+      };
+
+      // 컴포넌트
+      const App = () => {
+        const { useState } = hooks;
+
+        const [count, setCount] = useState(0);
+        const [count2, setCount2] = useState(0);
+
+        return h(
+          "div",
+          { class: "wrap" },
+          h("strong", { class: "text" }, `count: ${count}`),
+          h(
+            "button",
+            { onClick: () => setCount(count + 1), class: "button" },
+            "1 더하기"
+          ),
+          h("strong", { class: "text" }, `count2: ${count2}`),
+          h(
+            "button",
+            { onClick: () => setCount2(count2 + 1), class: "button" },
+            "1 더하기"
+          )
+        );
+      };
+
+      // 상태값이 바뀔 때 리렌더링 시키기 위한 함수
+      const rerender = () => {
+        const { resetIndex } = hooks;
+
+        resetIndex();
+        root.innerHTML = "";
+        root.appendChild(App());
+      };
+
+      // 렌더링
+      root.appendChild(App());
+    </script>
+  </body>
+</html>
